@@ -22,7 +22,7 @@
               <strong>{{ user.followersLength}}</strong> followers (追隨者)
             </li>
           </ul>
-          <template v-if="!isCurrentUser">
+          <template v-if="isCurrentUser">
             <router-link
               :to="{ name: 'user-edit', params: { id: user.id } }"
               class="btn btn-primary"
