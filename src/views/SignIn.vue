@@ -14,6 +14,7 @@
           type="email"
           class="form-control"
           placeholder="email"
+          required
           autofocus
         />
       </div>
@@ -27,10 +28,15 @@
           type="password"
           class="form-control"
           placeholder="Password"
+          required
         />
       </div>
 
-      <button class="btn btn-lg btn-primary btn-block mb-3" type="submit">Submit</button>
+      <button
+        class="btn btn-lg btn-primary btn-block mb-3"
+        type="submit"
+        :disabled="isProcessing"
+      >Submit</button>
 
       <div class="text-center mb-3">
         <p>
@@ -52,11 +58,14 @@ export default {
   data() {
     return {
       email: "",
-      password: ""
+      password: "",
+      isProcessing: false
     };
   },
   methods: {
     handleSubmit() {
+      // 如果 email 或 password 為空，則使用 Toast 提示
+      // 然後 return 不繼續往後執行
       if (!this.email || !this.password) {
         Toast.fire({
           icon: "warning",
@@ -64,6 +73,8 @@ export default {
         });
         return;
       }
+
+      this.isProcessing = true;
 
       authorizationAPI
         .signIn({
@@ -82,7 +93,21 @@ export default {
           });
 
           // 成功登入後轉址到餐聽首頁
+          // 因為成功登入就會轉址，所以不用還原 isProcessing 的狀態
           this.$router.push("/restaurants");
+        })
+        .catch(error => {
+          // 將密碼欄位清空
+          this.password = "";
+
+          // 顯示錯誤提示
+          Toast.fire({
+            icon: "warning",
+            title: "請確認您輸入的帳號密碼"
+          });
+          // 因為登入失敗，所以要把按鈕狀態還原
+          this.isProcessing = false;
+          console.log("error", error);
         });
     }
   }
