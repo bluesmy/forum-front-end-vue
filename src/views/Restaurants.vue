@@ -28,6 +28,8 @@ import NavTabs from "./../components/NavTabs";
 import RestaurantCard from "./../components/RestaurantCard";
 import RestaurantsNavPills from "./../components/RestaurantsNavPills";
 import RestaurantsPagination from "./../components/RestaurantsPagination";
+// STEP 1：透過 import 匯入剛剛撰寫好用來呼叫 API 的方法
+import restaurantsAPI from "./../apis/restaurants";
 
 const dummyData = {
   restaurants: [
@@ -350,15 +352,32 @@ export default {
     };
   },
   created() {
-    this.fetchRestaurants();
+    // STEP 3：在 created 的時候呼叫 fetchRestaurants 方法
+    // 這裡會向伺服器請求第一頁且不分餐廳類別的資料
+    this.fetchRestaurants({
+      page: 1,
+      categoryId: ""
+    });
   },
   methods: {
-    fetchRestaurants() {
-      this.categories = dummyData.categories;
-      this.categoryId = dummyData.categoryId;
-      this.currentPage = dummyData.page;
-      this.restaurants = dummyData.restaurants;
-      this.totalPage = dummyData.totalPage.length;
+    // STEP 2：將 fetchRestaurants 改成 async...await 的語法
+    // 並且可以帶入參數 page 與 categoryId
+    // 呼叫 API 後取得 response
+    async fetchRestaurants({ page, categoryId }) {
+      try {
+        const response = await restaurantsAPI.getRestaurants({
+          page,
+          categoryId
+        });
+        console.log("response", response);
+        //     this.categories = data.categories
+        //     this.categoryId = data.categoryId
+        //     this.currentPage = data.page
+        //     this.restaurants = data.restaurants
+        //     this.totalPage = data.totalPage.length
+      } catch (error) {
+        console.log("error", error);
+      }
     }
   }
 };
