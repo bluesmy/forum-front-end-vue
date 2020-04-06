@@ -22,13 +22,13 @@
           v-if="restaurant.isFavorited"
           type="button"
           class="btn btn-danger btn-border favorite mr-2"
-          @click.stop.prevent="deleteFavorite"
+          @click.stop.prevent="deleteFavorite(restaurant.id)"
         >移除最愛</button>
         <button
           v-else
           type="button"
           class="btn btn-primary btn-border favorite mr-2"
-          @click.stop.prevent="addFavorite"
+          @click.stop.prevent="addFavorite(restaurant.id)"
         >加到最愛</button>
         <button
           v-if="restaurant.isLiked"
@@ -48,6 +48,10 @@
 </template>
 
 <script>
+// STEP 1: 載入 API 方法和 Toast 提示工具
+import usersAPI from "./../apis/users";
+import { Toast } from "./../utils/helpers";
+
 export default {
   props: {
     initialRestaurant: {
@@ -61,17 +65,52 @@ export default {
     };
   },
   methods: {
-    addFavorite() {
-      this.restaurant = {
-        ...this.restaurant, // 保留餐廳內原有資料
-        isFavorited: true
-      };
+    // STEP 2: 將 addFavorite 改成 async...await 語法
+    async addFavorite(restaurantId) {
+      try {
+        // STEP 3: 使用撰寫好的 addFavorite 方法去呼叫 API，並取得回傳內容
+        const { data, statusText } = await usersAPI.addFavorite({
+          restaurantId
+        });
+
+        // STEP 4: 若請求過程有錯，則進到錯誤處理
+        if (statusText !== "OK" || data.status !== "success") {
+          throw new Error(statusText);
+        }
+
+        // STEP 5: 請求成功的話，改變 Vue 內的資料狀態
+        this.restaurant = {
+          ...this.restaurant,
+          isFavorited: true
+        };
+      } catch (error) {
+        // STEP 6: 請求失敗的話則跳出錯誤提示
+        Toast.fire({
+          icon: "error",
+          title: "無法將餐廳加入最愛，請稍後再試"
+        });
+      }
     },
-    deleteFavorite() {
-      this.restaurant = {
-        ...this.restaurant, // 保留餐廳內原有資料
-        isFavorited: false
-      };
+    async deleteFavorite(restaurantId) {
+      try {
+        const { data, statusText } = await usersAPI.deleteFavorite({
+          restaurantId
+        });
+
+        if (statusText !== "OK" || data.status !== "success") {
+          throw new Error(statusText);
+        }
+
+        this.restaurant = {
+          ...this.restaurant,
+          isFavorited: false
+        };
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法將餐廳從最愛移除，請稍後再試"
+        });
+      }
     },
     addLike() {
       this.restaurant = {
