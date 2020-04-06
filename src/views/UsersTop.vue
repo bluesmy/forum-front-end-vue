@@ -69,31 +69,65 @@ export default {
         });
       }
     },
-    addFollowing(userId) {
-      this.users = this.users.map(user => {
-        if (user.id !== userId) {
-          return user;
-        } else {
-          return {
-            ...user,
-            followerCount: user.followerCount + 1,
-            isFollowed: true
-          };
+    async addFollowing(userId) {
+      try {
+        const { data, statusText } = await usersAPI.addFollowing({
+          userId
+        });
+
+        if (statusText !== "OK" || data.status !== "success") {
+          throw new Error(statusText);
         }
-      });
+
+        this.users = this.users
+          .map(user => {
+            if (user.id !== userId) {
+              return user;
+            }
+
+            return {
+              ...user,
+              FollowerCount: user.FollowerCount + 1,
+              isFollowed: true
+            };
+          })
+          .sort((a, b) => b.FollowerCount - a.FollowerCount);
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法加入追蹤，請稍後再試"
+        });
+      }
     },
-    deleteFollowing(userId) {
-      this.users = this.users.map(user => {
-        if (user.id !== userId) {
-          return user;
-        } else {
-          return {
-            ...user,
-            followerCount: user.followerCount - 1,
-            isFollowed: false
-          };
+    async deleteFollowing(userId) {
+      try {
+        const { data, statusText } = await usersAPI.deleteFollowing({
+          userId
+        });
+
+        if (statusText !== "OK" || data.status !== "success") {
+          throw new Error(statusText);
         }
-      });
+
+        this.users = this.users
+          .map(user => {
+            if (user.id !== userId) {
+              return user;
+            }
+
+            return {
+              ...user,
+              FollowerCount: user.FollowerCount - 1,
+              isFollowed: false
+            };
+          })
+          .sort((a, b) => b.FollowerCount - a.FollowerCount);
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法取消追蹤，請稍後再試"
+        });
+      }
     }
   }
 };
