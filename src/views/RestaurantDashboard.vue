@@ -43,7 +43,7 @@ export default {
   methods: {
     async fetchRestaurant(restaurantId) {
       try {
-        const { data } = await restaurantsAPI.getRestaurant(restaurantId);
+        const { data } = await restaurantsAPI.getRestaurant({ restaurantId });
 
         if (data.status === "error") {
           throw new Error(data.message);
@@ -59,6 +59,7 @@ export default {
           viewCounts
         };
       } catch (error) {
+        console.log(error.message);
         Toast.fire({
           icon: "error",
           title: "無法取得餐廳資料，請稍後再試"
