@@ -1,7 +1,11 @@
 <template>
   <div class="container py-5">
     <!-- 餐廳表單 AdminRestaurantForm -->
-    <AdminRestaurantForm :initial-restaurant="restaurant" @after-submit="handleAfterSubmit" />
+    <AdminRestaurantForm
+      :initial-restaurant="restaurant"
+      :is-processing="isProcessing"
+      @after-submit="handleAfterSubmit"
+    />
   </div>
 </template>
 
@@ -26,18 +30,40 @@ export default {
         description: "",
         image: "",
         openingHours: ""
-      }
+      },
+      isProcessing: false
     };
   },
   created() {
     const { id } = this.$route.params;
     this.fetchRestaurant(id);
   },
+  beforeRouteUpdate(to, from, next) {
+    // 路由改變時重新抓取資料
+    const { id } = to.params;
+    this.fetchRestaurant(id);
+    next();
+  },
   methods: {
-    handleAfterSubmit(formData) {
-      // 透過 API 將表單資料送到伺服器
-      for (let [name, value] of formData.entries()) {
-        console.log(name + ": " + value);
+    async handleAfterSubmit(formData) {
+      try {
+        this.isProcessing = true;
+        const { data, statusText } = await adminAPI.restaurants.update({
+          restaurantId: this.restaurant.id,
+          formData
+        });
+
+        if (statusText !== "OK" || data.status !== "success") {
+          throw new Error(statusText);
+        }
+
+        this.$router.push({ name: "admin-restaurants" });
+      } catch (error) {
+        this.isProcessing = false;
+        Toast.fire({
+          icon: "error",
+          title: "無法建立餐廳，請稍後再試"
+        });
       }
     },
     // STEP 2: 改成 async...await 語法
