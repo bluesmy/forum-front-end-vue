@@ -108,9 +108,40 @@ const router = new Router({
   ]
 })
 
-router.beforeEach((to, from, next) => {
-  // 使用 dispatch 呼叫 Vuex 內的 actions
-  store.dispatch('fetchCurrentUser')
+router.beforeEach(async (to, from, next) => {
+  // 從 localStorage 取出 token
+  const tokenInLocalStorage = localStorage.getItem('token')
+  const tokenInStore = store.state.token
+
+  let isAuthenticated = store.state.isAuthenticated
+
+  // 如果有 token 的話才驗證
+  // 比較 localStorage 和 store 中的 token 是否一樣
+  if (tokenInLocalStorage && tokenInLocalStorage !== tokenInStore) {
+    // 取得驗證成功與否
+    // 使用 dispatch 呼叫 Vuex 內的 actions
+    isAuthenticated = await store.dispatch('fetchCurrentUser')
+  }
+
+  // 對於不需要驗證 token 的頁面
+  const pathsWithoutAuthentication = ['sign-in', 'sign-up']
+  if (pathsWithoutAuthentication.includes(to.name)) {
+    next()
+    return
+  }
+
+  // 如果 token 無效，且要去除了登入和註冊以外的其他頁面，則轉址到登入頁
+  if (!isAuthenticated && !pathsWithoutAuthentication.includes(to.name)) {
+    next('/signin')
+    return
+  }
+
+  // 如果 token 有效，且要去登入和註冊頁，則轉址到餐廳論壇首頁
+  if (isAuthenticated && pathsWithoutAuthentication.includes(to.name)) {
+    next('/restaurants')
+    return
+  }
+
   next()
 })
 
