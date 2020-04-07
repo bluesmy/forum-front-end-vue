@@ -72,20 +72,33 @@ export default {
         });
       }
     },
-    toggleUserRole({ userId, isAdmin }) {
-      console.log(isAdmin);
-      // TODO: 透過 API 告知伺服器欲修改的User role...
-
-      this.users = this.users.map(user => {
-        if (user.id !== userId) {
-          return user;
+    async toggleUserRole({ userId, isAdmin }) {
+      try {
+        const { data } = await adminAPI.users.update({
+          userId,
+          isAdmin: (!isAdmin).toString()
+        });
+        console.log(isAdmin);
+        if (data.status === "error") {
+          throw new Error(data.message);
         }
 
-        return {
-          ...user,
-          isAdmin: !user.isAdmin
-        };
-      });
+        this.users = this.users.map(user => {
+          if (user.id !== userId) {
+            return user;
+          }
+
+          return {
+            ...user,
+            isAdmin: !isAdmin
+          };
+        });
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法更新會員角色，請稍後再試"
+        });
+      }
     }
   }
 };
