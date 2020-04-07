@@ -135,13 +135,32 @@ export default {
         });
       }
     },
-    deleteCategory(categoryId) {
-      // TODO: 透過 API 告知伺服器欲刪除的餐廳類別
+    async deleteCategory(categoryId) {
+      try {
+        this.isProcessing = true;
 
-      // 將該餐廳類別從陣列中移除
-      this.categories = this.categories.filter(
-        category => category.id !== categoryId
-      );
+        const { data } = await adminAPI.categories.delete({ categoryId });
+
+        if (data.status === "error") {
+          throw new Error(data.message);
+        }
+
+        // 將該餐廳類別從陣列中移除
+        this.categories = this.categories.filter(
+          category => category.id !== categoryId
+        );
+        this.isProcessing = false;
+        Toast.fire({
+          icon: "success",
+          title: "成功刪除該餐廳類別"
+        });
+      } catch (error) {
+        this.isProcessing = false;
+        Toast.fire({
+          icon: "error",
+          title: "無法刪除該餐廳類別，請稍候再試"
+        });
+      }
     },
     toggleIsEditing(categoryId) {
       this.categories = this.categories.map(category => {
