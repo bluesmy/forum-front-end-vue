@@ -13,7 +13,7 @@
               <strong>{{ user.commentsLength }}</strong> 已評論餐廳
             </li>
             <li>
-              <strong>{{ user.favoritedRestaurantsLength.length }}</strong> 收藏的餐廳
+              <strong>{{ user.favoritedRestaurantsLength }}</strong> 收藏的餐廳
             </li>
             <li>
               <strong>{{ user.followingsLength }}</strong> followings (追蹤者)
