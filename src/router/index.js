@@ -141,10 +141,6 @@ router.beforeEach(async (to, from, next) => {
 
   // 對於不需要驗證 token 的頁面
   const pathsWithoutAuthentication = ['sign-in', 'sign-up']
-  if (pathsWithoutAuthentication.includes(to.name)) {
-    next()
-    return
-  }
 
   // 如果 token 無效，且要去除了登入和註冊以外的其他頁面，則轉址到登入頁
   if (!isAuthenticated && !pathsWithoutAuthentication.includes(to.name)) {
