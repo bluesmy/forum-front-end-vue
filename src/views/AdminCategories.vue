@@ -9,7 +9,12 @@
           <input v-model="newCategoryName" type="text" class="form-control" placeholder="新增餐廳類別..." />
         </div>
         <div class="col-auto">
-          <button type="button" class="btn btn-primary" @click.stop.prevent="createCategory">新增</button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            :disabled="isProcessing"
+            @click.stop.prevent="createCategory"
+          >新增</button>
         </div>
       </div>
     </form>
@@ -45,6 +50,7 @@
               v-show="category.isEditing"
               type="button"
               class="btn btn-link mr-2"
+              :disabled="isProcessing"
               @click.stop.prevent="updateCategory({ categoryId: category.id, name: category.name })"
             >Save</button>
             <button
@@ -114,7 +120,7 @@ export default {
 
         // 將新的類別添加到陣列中
         this.categories.push({
-          id: data.id,
+          id: data.categoryId,
           name: this.newCategoryName,
           isEditing: false
         });
@@ -148,10 +154,28 @@ export default {
         };
       });
     },
-    updateCategory({ categoryId, name }) {
-      console.log(name);
-      // TODO: 透過 API 去向伺服器更新餐廳類別名稱
-      this.toggleIsEditing(categoryId);
+    async updateCategory({ categoryId, name }) {
+      try {
+        this.isProcessing = true;
+
+        const { data } = await adminAPI.categories.update({
+          categoryId,
+          name
+        });
+
+        if (data.status === "error") {
+          throw new Error(data.message);
+        }
+
+        this.isProcessing = false;
+        this.toggleIsEditing(categoryId);
+      } catch (error) {
+        this.isProcessing = false;
+        Toast.fire({
+          icon: "error",
+          title: "無法更新餐廳類別，請稍候再試"
+        });
+      }
     },
     handleCancel(categoryId) {
       this.categories = this.categories.map(category => {
