@@ -16,7 +16,7 @@
           <UserFollowingsCard :followings="followings" />
           <br />
           <!-- UserFollowersCard -->
-          <UserFollowersCard :followers="followers" />
+          <UserFollowersCard :followers="followers" @change-followers="fetchUser" />
         </div>
         <div class="col-md-8">
           <!-- UserCommentsCard -->

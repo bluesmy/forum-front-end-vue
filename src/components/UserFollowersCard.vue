@@ -32,6 +32,14 @@ export default {
       default: () => []
     }
   },
+  watch: {
+    followers(followers) {
+      this.followers = {
+        ...this.followers,
+        ...followers
+      };
+    }
+  },
   data() {
     return {
       isLoading: true

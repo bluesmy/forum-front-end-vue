@@ -94,8 +94,13 @@ export default {
           throw new Error(statusText);
         }
 
+        this.user = {
+          ...this.user,
+          followersLength: this.user.followersLength + 1
+        };
         this.isFollowed = true;
         this.isProcessing = false;
+        this.$emit("change-followers", userId);
       } catch (error) {
         this.isProcessing = false;
         Toast.fire({
@@ -115,8 +120,13 @@ export default {
           throw new Error(statusText);
         }
 
+        this.user = {
+          ...this.user,
+          followersLength: this.user.followersLength - 1
+        };
         this.isFollowed = false;
         this.isProcessing = false;
+        this.$emit("change-followers", userId);
       } catch (error) {
         this.isProcessing = false;
         Toast.fire({
