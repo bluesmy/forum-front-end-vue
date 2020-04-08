@@ -3,7 +3,8 @@
     <!-- AdminNav Component -->
     <AdminNav />
 
-    <table class="table">
+    <Spinner v-if="isLoading" />
+    <table v-else class="table">
       <thead class="thead-dark">
         <tr>
           <th scope="col">#</th>
@@ -37,15 +38,18 @@ import { mapState } from "vuex";
 import AdminNav from "@/components/AdminNav";
 import adminAPI from "./../apis/admin";
 import { Toast } from "./../utils/helpers";
+import Spinner from "./../components/Spinner";
 
 export default {
   components: {
-    AdminNav
+    AdminNav,
+    Spinner
   },
   // 3. 定義 Vue 中使用的 data 資料
   data() {
     return {
-      users: []
+      users: [],
+      isLoading: true
     };
   },
   computed: {
@@ -59,12 +63,15 @@ export default {
     // 4. 定義 `fetchUsers` 方法，把 `dummyData` 帶入 Vue 物件
     async fetchUsers() {
       try {
+        this.isLoading = true;
         const { data } = await adminAPI.users.get();
         if (data.status === "error") {
           throw new Error(data.message);
         }
         this.users = data.users;
+        this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         console.error(error.message);
         Toast.fire({
           icon: "error",

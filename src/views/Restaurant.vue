@@ -1,16 +1,19 @@
 <template>
   <div class="container py-5">
-    <h1>餐廳描述頁</h1>
-    <!-- 餐廳資訊頁 RestaurantDetail -->
-    <RestaurantDetail :initial-restaurant="restaurant" />
-    <hr />
-    <!-- 餐廳評論 RestaurantComments -->
-    <RestaurantComments
-      :restaurant-comments="restaurantComments"
-      @after-delete-comment="afterDeleteComment"
-    />
-    <!-- 新增評論 CreateComment -->
-    <CreateComment :restaurant-id="restaurant.id" @after-create-comment="afterCreateComment" />
+    <Spinner v-if="isLoading" />
+    <template v-else>
+      <h1>餐廳描述頁</h1>
+      <!-- 餐廳資訊頁 RestaurantDetail -->
+      <RestaurantDetail :initial-restaurant="restaurant" />
+      <hr />
+      <!-- 餐廳評論 RestaurantComments -->
+      <RestaurantComments
+        :restaurant-comments="restaurantComments"
+        @after-delete-comment="afterDeleteComment"
+      />
+      <!-- 新增評論 CreateComment -->
+      <CreateComment :restaurant-id="restaurant.id" @after-create-comment="afterCreateComment" />
+    </template>
   </div>
 </template>
 
@@ -23,6 +26,7 @@ import restaurantsAPI from "./../apis/restaurants";
 import { Toast } from "./../utils/helpers";
 // STEP 1: 載入 Vuex
 import { mapState } from "vuex";
+import Spinner from "./../components/Spinner";
 
 // STEP 6: 移除 dummyData
 
@@ -33,7 +37,8 @@ export default {
   components: {
     RestaurantDetail,
     RestaurantComments,
-    CreateComment
+    CreateComment,
+    Spinner
   },
   data() {
     return {
@@ -49,7 +54,8 @@ export default {
         isFavorited: false,
         isLiked: false
       },
-      restaurantComments: []
+      restaurantComments: [],
+      isLoading: true
       // STEP 3: 移除 currentUser 屬性
     };
   },
@@ -70,6 +76,7 @@ export default {
     // STEP 2: 改用 async...await 語法
     async fetchRestaurant(restaurantId) {
       try {
+        this.isLoading = true;
         // STEP 3: 透過 restaurantsAPI 取得餐廳資訊
         const { data, statusText } = await restaurantsAPI.getRestaurant({
           restaurantId
@@ -94,7 +101,9 @@ export default {
         };
 
         this.restaurantComments = data.restaurant.Comments;
+        this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         // STEP 5: 錯誤處理
         Toast.fire({
           icon: "error",

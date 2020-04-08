@@ -18,7 +18,8 @@
         </div>
       </div>
     </form>
-    <table class="table">
+    <Spinner v-if="isLoading" />
+    <table v-else class="table">
       <thead class="thead-dark">
         <tr>
           <th scope="col" width="60">#</th>
@@ -70,16 +71,19 @@
 import AdminNav from "@/components/AdminNav";
 import adminAPI from "./../apis/admin";
 import { Toast } from "./../utils/helpers";
+import Spinner from "./../components/Spinner";
 
 export default {
   components: {
-    AdminNav
+    AdminNav,
+    Spinner
   },
   data() {
     return {
       newCategoryName: "",
       categories: [],
-      isProcessing: false
+      isProcessing: false,
+      isLoading: true
     };
   },
   created() {
@@ -88,6 +92,7 @@ export default {
   methods: {
     async fetchCategories() {
       try {
+        this.isLoading = true;
         const { data, statusText } = await adminAPI.categories.get();
 
         if (statusText !== "OK") {
@@ -99,7 +104,9 @@ export default {
           ...category,
           isEditing: false
         }));
+        this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         Toast.fire({
           icon: "error",
           title: "無法取得分類資料，請稍候再試"

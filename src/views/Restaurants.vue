@@ -4,22 +4,25 @@
     <NavTabs />
     <!-- 餐廳類別標籤 RestaurantsNavPills -->
     <RestaurantsNavPills :categories="categories" />
-    <div class="row">
-      <!-- 餐廳卡片 RestaurantCard-->
-      <RestaurantCard
-        v-for="restaurant in restaurants"
-        :key="restaurant.id"
-        :initial-restaurant="restaurant"
-      />
-    </div>
+    <Spinner v-if="isLoading" />
+    <template v-else>
+      <div class="row">
+        <!-- 餐廳卡片 RestaurantCard-->
+        <RestaurantCard
+          v-for="restaurant in restaurants"
+          :key="restaurant.id"
+          :initial-restaurant="restaurant"
+        />
+      </div>
 
-    <!-- 分頁標籤 RestaurantPagination -->
-    <RestaurantsPagination
-      v-if="totalPage > 1"
-      :category-id="categoryId"
-      :current-page="currentPage"
-      :total-page="totalPage"
-    />
+      <!-- 分頁標籤 RestaurantPagination -->
+      <RestaurantsPagination
+        v-if="totalPage > 1"
+        :category-id="categoryId"
+        :current-page="currentPage"
+        :total-page="totalPage"
+      />
+    </template>
   </div>
 </template>
 
@@ -31,6 +34,7 @@ import RestaurantsPagination from "./../components/RestaurantsPagination";
 // 透過 import 匯入剛剛撰寫好用來呼叫 API 的方法
 import restaurantsAPI from "./../apis/restaurants";
 import { Toast } from "./../utils/helpers";
+import Spinner from "./../components/Spinner";
 
 // STEP 1：將 dummyData 刪除
 
@@ -39,7 +43,8 @@ export default {
     NavTabs,
     RestaurantCard,
     RestaurantsNavPills,
-    RestaurantsPagination
+    RestaurantsPagination,
+    Spinner
   },
   data() {
     return {
@@ -47,7 +52,8 @@ export default {
       categoryId: -1,
       currentPage: 1,
       restaurants: [],
-      totalPage: -1
+      totalPage: -1,
+      isLoading: true
     };
   },
   created() {
@@ -67,6 +73,7 @@ export default {
     // STEP 1：直接在 fetchRestaurants 的地方帶入預設值
     async fetchRestaurants({ page = 1, categoryId = "" }) {
       try {
+        this.isLoading = true;
         // STEP 2：直接把 response 內需要的屬性透過解構賦值拿出來
         const { data, statusText } = await restaurantsAPI.getRestaurants({
           page,
@@ -82,7 +89,9 @@ export default {
         this.currentPage = data.page;
         this.restaurants = data.restaurants;
         this.totalPage = data.totalPage.length;
+        this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         Toast.fire({
           icon: "error",
           title: "無法取得餐廳資料，請稍後再試"

@@ -1,5 +1,6 @@
 <template>
-  <form v-show="!isLoading" @submit.stop.prevent="handleSubmit">
+  <Spinner v-if="isLoading" />
+  <form v-else @submit.stop.prevent="handleSubmit">
     <div class="form-group">
       <label for="name">Name</label>
       <input
@@ -108,8 +109,12 @@
 // STEP 1: 匯入 adminAPI 和錯誤提示用的 Toast
 import adminAPI from "./../apis/admin";
 import { Toast } from "./../utils/helpers";
+import Spinner from "./../components/Spinner";
 
 export default {
+  components: {
+    Spinner
+  },
   props: {
     initialRestaurant: {
       type: Object,
@@ -162,6 +167,7 @@ export default {
     // STEP 2: 改成 async...await 語法
     async fetchCategories() {
       try {
+        this.isLoading = true;
         // STEP 3: 向伺服器取得餐廳類別清單
         const { data, statusText } = await adminAPI.categories.get();
 
