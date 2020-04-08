@@ -15,7 +15,7 @@
         <div class="row no-gutters">
           <div class="col-md-4">
             <router-link :to="{ name: 'restaurant', params: { id: restaurant.id } }">
-              <img class="card-img" :src="restaurant.image" />
+              <img class="card-img" :src="restaurant.image | emptyImage" />
             </router-link>
           </div>
           <div class="col-md-8">
@@ -56,12 +56,14 @@ import Spinner from "./../components/Spinner";
 import restaurantsAPI from "./../apis/restaurants";
 import usersAPI from "./../apis/users";
 import { Toast } from "./../utils/helpers";
+import { emptyImageFilter } from "./../utils/mixins";
 
 export default {
   components: {
     NavTabs,
     Spinner
   },
+  mixins: [emptyImageFilter],
   data() {
     return {
       restaurants: [],

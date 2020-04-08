@@ -8,7 +8,7 @@
       <div class="row text-center">
         <div v-for="user in users" :key="user.id" class="col-3">
           <router-link :to="{ name: 'user', params: { id: user.id } }">
-            <img :src="user.image" width="140px" height="140px" />
+            <img :src="user.image | emptyImage" width="140px" height="140px" />
           </router-link>
           <h2>{{user.name}}</h2>
           <span class="badge badge-secondary">追蹤人數：{{user.followerCount}}</span>
@@ -39,12 +39,14 @@ import NavTabs from "./../components/NavTabs";
 import Spinner from "./../components/Spinner";
 import usersAPI from "./../apis/users";
 import { Toast } from "./../utils/helpers";
+import { emptyImageFilter } from "./../utils/mixins";
 
 export default {
   components: {
     NavTabs,
     Spinner
   },
+  mixins: [emptyImageFilter],
   data() {
     return {
       users: [],

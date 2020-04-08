@@ -9,14 +9,23 @@
         :key="following.id"
         :to="{ name: 'user', params: { id: following.id } }"
       >
-        <img :src="following.image" width="60" height="60" class="mr-1" @load="changeLoading" />
+        <img
+          :src="following.image | emptyImage"
+          width="60"
+          height="60"
+          class="mr-1"
+          @load="changeLoading"
+        />
       </router-link>
     </div>
   </div>
 </template>
 
 <script>
+import { emptyImageFilter } from "./../utils/mixins";
+
 export default {
+  mixins: [emptyImageFilter],
   props: {
     followings: {
       type: Array,

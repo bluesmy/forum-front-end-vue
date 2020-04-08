@@ -3,7 +3,7 @@
     <div v-show="!isLoading" class="card mb-4">
       <img
         class="card-img-top"
-        :src="restaurant.image"
+        :src="restaurant.image | emptyImage"
         alt="Card image cap"
         width="286px"
         height="180px"
@@ -56,8 +56,10 @@
 // STEP 1: 載入 API 方法和 Toast 提示工具
 import usersAPI from "./../apis/users";
 import { Toast } from "./../utils/helpers";
+import { emptyImageFilter } from "./../utils/mixins";
 
 export default {
+  mixins: [emptyImageFilter],
   props: {
     initialRestaurant: {
       type: Object,
