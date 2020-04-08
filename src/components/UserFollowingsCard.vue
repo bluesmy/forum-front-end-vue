@@ -9,7 +9,7 @@
         :key="following.id"
         :to="{ name: 'user', params: { id: following.id } }"
       >
-        <img :src="following.image" width="60" height="60" class="mr-1" />
+        <img :src="following.image" width="60" height="60" class="mr-1" @load="changeLoading" />
       </router-link>
     </div>
   </div>
@@ -21,6 +21,16 @@ export default {
     followings: {
       type: Array,
       default: () => []
+    }
+  },
+  data() {
+    return {
+      isLoading: true
+    };
+  },
+  methods: {
+    changeLoading() {
+      this.isLoading = false;
     }
   }
 };

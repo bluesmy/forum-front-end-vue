@@ -9,7 +9,13 @@
         :key="favoritedRestaurant.id"
         :to="{ name: 'restaurant', params: { id: favoritedRestaurant.id } }"
       >
-        <img :src="favoritedRestaurant.image" width="60" height="60" class="mr-1 mb-1" />
+        <img
+          :src="favoritedRestaurant.image"
+          width="60"
+          height="60"
+          class="mr-1 mb-1"
+          @load="changeLoading"
+        />
       </router-link>
     </div>
   </div>
@@ -21,6 +27,16 @@ export default {
     favoritedRestaurants: {
       type: Array,
       default: () => []
+    }
+  },
+  data() {
+    return {
+      isLoading: true
+    };
+  },
+  methods: {
+    changeLoading() {
+      this.isLoading = false;
     }
   }
 };

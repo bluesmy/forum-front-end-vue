@@ -9,7 +9,13 @@
         :key="comment.id"
         :to="{name: 'restaurant', params: { id: comment.Restaurant.id }}"
       >
-        <img :src="comment.Restaurant.image" width="60" height="60" class="avatar" />
+        <img
+          :src="comment.Restaurant.image"
+          width="60"
+          height="60"
+          class="avatar"
+          @load="changeLoading"
+        />
       </router-link>
     </div>
   </div>
@@ -21,6 +27,16 @@ export default {
     comments: {
       type: Array,
       default: () => []
+    }
+  },
+  data() {
+    return {
+      isLoading: true
+    };
+  },
+  methods: {
+    changeLoading() {
+      this.isLoading = false;
     }
   }
 };

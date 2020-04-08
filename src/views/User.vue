@@ -1,29 +1,32 @@
 <template>
   <div class="container py-5">
-    <div class="card mb-3">
-      <!-- UserProfileCard -->
-      <UserProfileCard
-        :user="user"
-        :is-current-user="currentUser.id === user.id"
-        :initial-is-followed="isFollowed"
-      />
-    </div>
-    <div class="row">
-      <div class="col-md-4">
-        <!-- UserFollowingsCard -->
-        <UserFollowingsCard :followings="followings" />
-        <br />
-        <!-- UserFollowersCard -->
-        <UserFollowersCard :followers="followers" />
+    <Spinner v-if="isLoading" />
+    <template v-else>
+      <div class="card mb-3">
+        <!-- UserProfileCard -->
+        <UserProfileCard
+          :user="user"
+          :is-current-user="currentUser.id === user.id"
+          :initial-is-followed="isFollowed"
+        />
       </div>
-      <div class="col-md-8">
-        <!-- UserCommentsCard -->
-        <UserCommentsCard :comments="comments" />
-        <br />
-        <!-- UserFavoritedRestaurantsCard -->
-        <UserFavoritedRestaurantsCard :favoritedRestaurants="favoritedRestaurants" />
+      <div class="row">
+        <div class="col-md-4">
+          <!-- UserFollowingsCard -->
+          <UserFollowingsCard :followings="followings" />
+          <br />
+          <!-- UserFollowersCard -->
+          <UserFollowersCard :followers="followers" />
+        </div>
+        <div class="col-md-8">
+          <!-- UserCommentsCard -->
+          <UserCommentsCard :comments="comments" />
+          <br />
+          <!-- UserFavoritedRestaurantsCard -->
+          <UserFavoritedRestaurantsCard :favoritedRestaurants="favoritedRestaurants" />
+        </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -36,6 +39,7 @@ import UserCommentsCard from "./../components/UserCommentsCard";
 import UserFavoritedRestaurantsCard from "./../components/UserFavoritedRestaurantsCard";
 import usersAPI from "./../apis/users";
 import { Toast } from "./../utils/helpers";
+import Spinner from "./../components/Spinner";
 
 export default {
   name: "User",
@@ -44,7 +48,8 @@ export default {
     UserFollowingsCard,
     UserFollowersCard,
     UserCommentsCard,
-    UserFavoritedRestaurantsCard
+    UserFavoritedRestaurantsCard,
+    Spinner
   },
   data() {
     return {
@@ -62,7 +67,8 @@ export default {
       favoritedRestaurants: [],
       followers: [],
       followings: [],
-      isFollowed: false
+      isFollowed: false,
+      isLoading: true
     };
   },
   computed: {
@@ -80,6 +86,7 @@ export default {
   methods: {
     async fetchUser(userId) {
       try {
+        this.isLoading = true;
         const response = await usersAPI.get({ userId });
         console.log(response);
         const { data } = response;
@@ -122,7 +129,9 @@ export default {
         this.followings = Followings;
         this.followers = Followers;
         this.favoritedRestaurants = FavoritedRestaurants;
+        this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         Toast.fire({
           icon: "error",
           title: "無法取得使用者資料，請稍後再試"
