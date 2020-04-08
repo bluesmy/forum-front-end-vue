@@ -33,6 +33,7 @@
           <button
             type="button"
             class="btn btn-link"
+            :disabled="isProcessing"
             @click.stop.prevent="deleteRestaurant(restaurant.id)"
           >Delete</button>
         </td>
@@ -53,7 +54,8 @@ export default {
   data() {
     return {
       restaurants: [],
-      isLoading: true
+      isLoading: true,
+      isProcessing: false
     };
   },
   created() {
@@ -80,6 +82,7 @@ export default {
     },
     async deleteRestaurant(restaurantId) {
       try {
+        this.isProcessing = true;
         const { data } = await adminAPI.restaurants.delete({
           restaurantId
         });
@@ -95,7 +98,9 @@ export default {
           icon: "success",
           title: "刪除餐廳成功"
         });
+        this.isProcessing = false;
       } catch (error) {
+        this.isProcessing = false;
         Toast.fire({
           icon: "error",
           title: "無法刪除餐廳，請稍後再試"

@@ -33,12 +33,14 @@
               v-if="isFollowed"
               type="button"
               class="btn btn-danger"
+              :disabled="isProcessing"
               @click.stop.prevent="deleteFollowing(user.id)"
             >取消追蹤</button>
             <button
               v-else
               type="button"
               class="btn btn-primary"
+              :disabled="isProcessing"
               @click.stop.prevent="addFollowing(user.id)"
             >追蹤</button>
           </template>
@@ -74,12 +76,14 @@ export default {
   },
   data() {
     return {
-      isFollowed: this.initialIsFollowed
+      isFollowed: this.initialIsFollowed,
+      isProcessing: false
     };
   },
   methods: {
     async addFollowing(userId) {
       try {
+        this.isProcessing = true;
         const { data, statusText } = await usersAPI.addFollowing({
           userId
         });
@@ -89,7 +93,9 @@ export default {
         }
 
         this.isFollowed = true;
+        this.isProcessing = false;
       } catch (error) {
+        this.isProcessing = false;
         Toast.fire({
           icon: "error",
           title: "無法加入追蹤，請稍後再試"
@@ -98,6 +104,7 @@ export default {
     },
     async deleteFollowing(userId) {
       try {
+        this.isProcessing = true;
         const { data, statusText } = await usersAPI.deleteFollowing({
           userId
         });
@@ -107,7 +114,9 @@ export default {
         }
 
         this.isFollowed = false;
+        this.isProcessing = false;
       } catch (error) {
+        this.isProcessing = false;
         Toast.fire({
           icon: "error",
           title: "無法取消追蹤，請稍後再試"

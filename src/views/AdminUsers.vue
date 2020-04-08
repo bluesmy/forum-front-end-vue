@@ -23,6 +23,7 @@
               v-if="currentUser.id !== user.id"
               type="button"
               class="btn btn-link"
+              :disabled="isProcessing"
               @click.stop.prevent="toggleUserRole({ userId: user.id, isAdmin: user.isAdmin })"
             >{{ user.isAdmin ? 'set as user' : 'set as admin' }}</button>
           </td>
@@ -49,7 +50,8 @@ export default {
   data() {
     return {
       users: [],
-      isLoading: true
+      isLoading: true,
+      isProcessing: false
     };
   },
   computed: {
@@ -81,6 +83,7 @@ export default {
     },
     async toggleUserRole({ userId, isAdmin }) {
       try {
+        this.isProcessing = true;
         const { data } = await adminAPI.users.update({
           userId,
           isAdmin: (!isAdmin).toString()
@@ -100,7 +103,9 @@ export default {
             isAdmin: !isAdmin
           };
         });
+        this.isProcessing = false;
       } catch (error) {
+        this.isProcessing = false;
         Toast.fire({
           icon: "error",
           title: "無法更新會員角色，請稍後再試"
