@@ -100,7 +100,7 @@ export default {
         };
         this.isFollowed = true;
         this.isProcessing = false;
-        this.$emit("change-followers", userId);
+        this.$emit("update-data", userId);
       } catch (error) {
         this.isProcessing = false;
         Toast.fire({
@@ -126,7 +126,7 @@ export default {
         };
         this.isFollowed = false;
         this.isProcessing = false;
-        this.$emit("change-followers", userId);
+        this.$emit("update-data", userId);
       } catch (error) {
         this.isProcessing = false;
         Toast.fire({

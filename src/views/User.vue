@@ -8,6 +8,7 @@
           :user="user"
           :is-current-user="currentUser.id === user.id"
           :initial-is-followed="isFollowed"
+          @update-data="fetchUser"
         />
       </div>
       <div class="row">
@@ -16,7 +17,7 @@
           <UserFollowingsCard :followings="followings" />
           <br />
           <!-- UserFollowersCard -->
-          <UserFollowersCard :followers="followers" @change-followers="fetchUser" />
+          <UserFollowersCard :followers="followers" />
         </div>
         <div class="col-md-8">
           <!-- UserCommentsCard -->
